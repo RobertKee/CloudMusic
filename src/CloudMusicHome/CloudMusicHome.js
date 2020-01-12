@@ -10,8 +10,12 @@ export default class CloudMusicHome extends React.Component {
       isLoaded: false,
       height: window.innerHeight,
       width: window.innerWidth,
-      pixels: []
+      pixels: [],
+      pixelReport: []
     };
+    this.getPixelReport = this.getPixelReport.bind(this)
+    this.setPixelReport = this.setPixelReport.bind(this)
+
   }
 
   componentDidMount() {
@@ -21,21 +25,17 @@ export default class CloudMusicHome extends React.Component {
     this.setDotList();
   }
 
-  //   getPixelReport() {
-  //       let pixelReport = []
-  //       this.state.pixels.forEach(pixel =>
-  //           pixelReport.push(this.reportHelper(pixel))
-  //       )
+    getPixelReport() {
+      CloudMusicCanvas.getPixelReport()
+      return this.state.pixelReport
+    }
 
-  //       return getPixelReport
-  //   }
-
-  //   reportHelper(pixel) {
-
-  //     let rgbStatus = {r: 100, g: 100, b: 100}
-
-  //     return(rgbStatus)
-  //   }
+    setPixelReport(pixelUpdate) {
+      console.log('pixel update: ', pixelUpdate)
+      this.setState({
+        pixelReport: pixelUpdate
+      })
+    }
 
   setDotList() {
     let tempPixelList = [];
@@ -57,8 +57,8 @@ export default class CloudMusicHome extends React.Component {
   render() {
     return (
         <div className="Home">
-            <CloudMusicCanvas height={this.state.height} width={this.state.width} pixels={this.state.pixels} />
-            <CloudMusicPolySynth />
+            <CloudMusicCanvas height={this.state.height} width={this.state.width} pixels={this.state.pixels} setPixelReport={this.setPixelReport} />
+            <CloudMusicPolySynth getPixelReport={this.getPixelReport} />
         </div>
     )
   }

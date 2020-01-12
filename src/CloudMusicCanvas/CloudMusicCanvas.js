@@ -11,25 +11,32 @@ export default class CloudMusicCanvas extends React.Component {
   }
 
   componentDidMount() {
-    let img = this.refs.defaultImage;
-    let canvas = this.refs.canvas;
-    let context = canvas.getContext('2d');
+    let img = this.refs.defaultImage
+    let canvas = this.refs.canvas
+    let context = canvas.getContext('2d')
+    let dotContext = canvas.getContext('2d')
     let blackDot = context.createImageData(10,10)
     
     
     for (let i = 0; i < blackDot.data.length; i+=4) {
-      blackDot.data[i] = 0
-      blackDot.data[i+1] = 0
-      blackDot.data[i+2] = 0
       blackDot.data[i+3] = 255
     }
 
     img.onload = () => {
       context.drawImage(img, 0, 0);
       this.props.pixels.forEach(pixel => {
-        context.putImageData(blackDot, pixel.width, pixel.height);
+        dotContext.putImageData(blackDot, pixel.width, pixel.height);
       });
     };
+  }
+
+  runPixelReport = () => {
+    let pixelReport = []
+    this.props.pixels.forEach(pixel => 
+      pixelReport.push(this.context.getImageData(pixel.height, pixel.width))
+    )
+
+    this.props.setPixelReport(pixelReport)
   }
 
   render() {
