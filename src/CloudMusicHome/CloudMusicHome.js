@@ -12,54 +12,61 @@ export default class CloudMusicHome extends React.Component {
       width: window.innerWidth,
       pixels: [],
       pixelReport: []
-    };
-    this.getPixelReport = this.getPixelReport.bind(this)
-    this.setPixelReport = this.setPixelReport.bind(this)
-
+    }
+    this.getPixelReport = this.getPixelReport.bind(this);
+    this.setPixelReport = this.setPixelReport.bind(this);
+    this.renderCanvas = React.createRef()
   }
 
   componentDidMount() {
     this.setState({
       isLoaded: true
     });
-    this.setDotList();
+    this.setDotList()
   }
 
-    getPixelReport() {
-      CloudMusicCanvas.getPixelReport()
-      return this.state.pixelReport
-    }
+  getPixelReport = async () => {
+    let tempReport = await this.renderCanvas.current.runPixelReport()
+    console.log('temp report: ', tempReport)
+    // return this.state.pixelReport;
+  }
 
-    setPixelReport(pixelUpdate) {
-      console.log('pixel update: ', pixelUpdate)
-      this.setState({
-        pixelReport: pixelUpdate
-      })
-    }
+  setPixelReport(pixelUpdate) {
+    console.log("pixel update: ", pixelUpdate);
+    this.setState({
+      pixelReport: pixelUpdate
+    })
+  }
 
   setDotList() {
-    let tempPixelList = [];
+    let tempPixelList = []
 
     for (let i = 0; i < 6; i++) {
       tempPixelList.push({
         width: Math.floor(Math.random() * this.state.width),
         height: Math.floor(Math.random() * this.state.height)
-      });
+      })
     }
-
-    console.log(tempPixelList);
 
     this.setState({
       pixels: tempPixelList
-    });
+    })
   }
 
   render() {
     return (
-        <div className="Home">
-            <CloudMusicCanvas height={this.state.height} width={this.state.width} pixels={this.state.pixels} setPixelReport={this.setPixelReport} />
-            <CloudMusicPolySynth getPixelReport={this.getPixelReport} />
-        </div>
-    )
+      <div className="Home">
+        <CloudMusicCanvas
+          height={this.state.height}
+          width={this.state.width}
+          pixels={this.state.pixels}
+          ref={this.renderCanvas}
+          setPixelReport={this.setPixelReport}
+        />
+        <CloudMusicPolySynth 
+          getPixelReport={this.getPixelReport} 
+        />
+      </div>
+    );
   }
 }

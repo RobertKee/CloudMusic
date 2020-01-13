@@ -15,8 +15,7 @@ export default class CloudMusicCanvas extends React.Component {
     let canvas = this.refs.canvas
     let context = canvas.getContext('2d')
     let dotContext = canvas.getContext('2d')
-    let blackDot = context.createImageData(10,10)
-    
+    let blackDot = dotContext.createImageData(10,10)
     
     for (let i = 0; i < blackDot.data.length; i+=4) {
       blackDot.data[i+3] = 255
@@ -30,11 +29,12 @@ export default class CloudMusicCanvas extends React.Component {
     };
   }
 
-  runPixelReport = () => {
+  runPixelReport() {
     let pixelReport = []
-    this.props.pixels.forEach(pixel => 
-      pixelReport.push(this.context.getImageData(pixel.height, pixel.width))
-    )
+    // this.props.pixels.forEach(pixel =>       
+      // pixelReport.push(this.context.getImageData(pixel.height, pixel.width)
+      // )
+    // )
 
     this.props.setPixelReport(pixelReport)
   }

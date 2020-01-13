@@ -21,6 +21,9 @@ export default class CloudMusicPolySynth extends React.Component {
   }
 
   handleClick() {
+    let pixelReport = this.props.getPixelReport()
+    console.log('pixelReport: ', pixelReport)
+
     if(!this.state.isStarted) {
       this.synth.triggerAttack("C4");
       this.setState({
