@@ -1,59 +1,134 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./CloudMusicCanvas.css";
-import defaultSky from "./defaultSky.jpeg";
+import {
+  Scene,
+  WebGLRenderer,
+  PerspectiveCamera,
+  BoxGeometry,
+  Mesh,
+  MeshBasicMaterial
+} from "three";
 
-export default class CloudMusicCanvas extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      hasCameraAccess: false
-    };
+let pixels = []
+
+const getPixels = () => {
+  for (let i = 0; i < 6; i++) {
+    pixels.push({
+      width: Math.floor(Math.random() * window.innerWidth),
+      height: Math.floor(Math.random() * window.innerHeight)
+    });
   }
+};
 
-  componentDidMount() {
-    let img = this.refs.defaultImage
-    let canvas = this.refs.canvas
-    let context = canvas.getContext('2d')
-    let dotContext = canvas.getContext('2d')
-    let blackDot = dotContext.createImageData(10,10)
+// for (let i = 0; i < blackDot.data.length; i+=4) {
+// blackDot.data[i+3] = 255
+// }
+
+const CloudMusicCanvas = props => {
+  useEffect(() => {
+    getPixels();
     
-    for (let i = 0; i < blackDot.data.length; i+=4) {
-      blackDot.data[i+3] = 255
+    import { OrbitControls } from './jsm/controls/OrbitControls.js';
+
+    var camera, scene, renderer, video;
+
+    init();
+    animate();
+
+    function init() {
+
+      camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.1, 100 );
+      camera.position.z = 0.01;
+
+      scene = new THREE.Scene();
+
+      video = document.getElementById( 'video' );
+
+      var texture = new THREE.VideoTexture( video );
+
+      var geometry = new THREE.PlaneBufferGeometry( 16, 9 );
+      geometry.scale( 0.5, 0.5, 0.5 );
+      var material = new THREE.MeshBasicMaterial( { map: texture } );
+
+      var count = 128;
+      var radius = 32;
+
+      for ( var i = 1, l = count; i <= l; i ++ ) {
+
+        var phi = Math.acos( - 1 + ( 2 * i ) / l );
+        var theta = Math.sqrt( l * Math.PI ) * phi;
+
+        var mesh = new THREE.Mesh( geometry, material );
+        mesh.position.setFromSphericalCoords( radius, phi, theta );
+        mesh.lookAt( camera.position );
+        scene.add( mesh );
+
+      }
+
+      renderer = new THREE.WebGLRenderer( { antialias: true } );
+      renderer.setPixelRatio( window.devicePixelRatio );
+      renderer.setSize( window.innerWidth, window.innerHeight );
+      document.body.appendChild( renderer.domElement );
+
+      var controls = new OrbitControls( camera, renderer.domElement );
+      controls.enableZoom = false;
+      controls.enablePan = false;
+
+      window.addEventListener( 'resize', onWindowResize, false );
+
+      //
+
+      if ( navigator.mediaDevices && navigator.mediaDevices.getUserMedia ) {
+
+        var constraints = { video: { width: 1280, height: 720, facingMode: 'user' } };
+
+        navigator.mediaDevices.getUserMedia( constraints ).then( function ( stream ) {
+
+          // apply the stream to the video element used in the texture
+
+          video.srcObject = stream;
+          video.play();
+
+        } ).catch( function ( error ) {
+
+          console.error( 'Unable to access the camera/webcam.', error );
+
+        } );
+
+      } else {
+
+        console.error( 'MediaDevices interface not available.' );
+
+      }
+
     }
 
-    img.onload = () => {
-      context.drawImage(img, 0, 0);
-      this.props.pixels.forEach(pixel => {
-        dotContext.putImageData(blackDot, pixel.width, pixel.height);
-      });
-    };
-  }
+    function onWindowResize() {
 
-  runPixelReport() {
-    let pixelReport = []
-    // this.props.pixels.forEach(pixel =>       
-      // pixelReport.push(this.context.getImageData(pixel.height, pixel.width)
-      // )
-    // )
+       camera.aspect = window.innerWidth / window.innerHeight;
+       camera.updateProjectionMatrix();
 
-    this.props.setPixelReport(pixelReport)
-  }
+       renderer.setSize( window.innerWidth, window.innerHeight );
 
-  render() {
-    return (
-      <div className="Canvas">
-        <canvas
-          ref="canvas"
-          width={this.props.width}
-          height={this.props.height}
-        />
-        <img
-          src={defaultSky}
-          ref="defaultImage"
-          className="hidden"
-          alt="Blue Sky"
-        />
-      </div>
-    );
-  }
-}
+    }
+
+    function animate() {
+
+       requestAnimationFrame( animate );
+       renderer.render( scene, camera );
+
+    }
+  });
+
+  return (
+    <div className="canvasContainer">
+      <canvas
+        className="canvas"
+        height={window.innerHeight}
+        width={window.innerWidth}>
+        </canvas>
+    </div>
+  );
+};
+
+export default CloudMusicCanvas;

@@ -1,5 +1,18 @@
+.startAlign {
+  text-align: center;
+}
+
 .startContainer {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-  }
+  position: absolute;
+  top: 25%;
+  left: 25%;
+  width: 50%;
+  background-color: white;
+  border-style: solid;
+}
+
+.startObject {
+  padding: 2%;
+  padding-top: 2%;
+  padding-right: 2%;
+}
